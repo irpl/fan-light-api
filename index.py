@@ -27,6 +27,6 @@ async def toggle(request: Request):
   else:
     await db["lights"].insert_one({**state, "thing": "lights"})
   
-    new_ligts_obj = await db["lights"].find_one({"thing":"lights"}) 
+  new_ligts_obj = await db["lights"].find_one({"thing":"lights"}) 
 
   return new_ligts_obj

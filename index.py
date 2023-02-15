@@ -1,7 +1,11 @@
+import os
 from fastapi import FastAPI, Request
-import uvicorn
+import motor.motor_asyncio
 
 app = FastAPI()
+client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"])
+db = client.things
+
 
 @app.get("/")
 async def read_root():
@@ -9,6 +13,15 @@ async def read_root():
     "message": "Welcome to my notes application, use the /docs route to proceed"
    }
 
-@app.put("/api")
+@app.put("/api/toggle")
 async def toggle(request: Request): 
-  return await request.json()
+  state = await request.json()
+
+  lights_obj = await db["lights"].find_one({"thing":"lights"})
+  if lights_obj:
+    await db["lights"].update_one({"$set": state})
+  else:
+    await db["lights"].insert_one({**state, "thing": "lights"})
+    new_ligts_obj = await db["lights"].find_one({"thing":"lights"}) 
+
+  return new_ligts_obj

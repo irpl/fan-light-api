@@ -1,11 +1,14 @@
 import os
 from fastapi import FastAPI, Request
 import motor.motor_asyncio
+from bson import ObjectId
+import pydantic
 
 app = FastAPI()
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"])
 db = client.things
 
+pydantic.json.ENCODERS_BY_TYPE[ObjectId]=str
 
 @app.get("/")
 async def read_root():

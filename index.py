@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 origins = [
-    "https://ecse-fan-light.onrender.com"
+    "https://ecse-fan-light-client.netlify.app"
 ]
 
 app.add_middleware(

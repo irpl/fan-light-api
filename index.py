@@ -34,4 +34,6 @@ async def toggle(request: Request):
 @app.get("/api/state")
 async def get_state():
   state = await db["hub"].find_one({"thing": "state"})
+  if state == None:
+    return {"lights": False, "fan": False}
   return state

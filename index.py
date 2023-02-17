@@ -16,7 +16,7 @@ async def read_root():
     "message": "Welcome to my notes application, use the /docs route to proceed"
    }
 
-@app.put("/api/toggle")
+@app.put("/api/state")
 async def toggle(request: Request): 
   state = await request.json()
 
@@ -31,7 +31,7 @@ async def toggle(request: Request):
 
   return new_ligts_obj
 
-@app.put("/api/state")
+@app.get("/api/state")
 async def get_state():
   state = await db["hub"].find_one({"thing": "state"})
   return state

@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI, Request
 import motor.motor_asyncio
 from bson import ObjectId
-import pydantic
+from pydantic import BaseModel
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -23,7 +23,10 @@ app.add_middleware(
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"])
 db = client.things
 
-pydantic.json.ENCODERS_BY_TYPE[ObjectId]=str
+class State(BaseModel):
+  fan: bool
+  lights: bool
+        
 
 @app.get("/")
 async def read_root():
@@ -32,8 +35,8 @@ async def read_root():
    }
 
 @app.put("/api/state")
-async def toggle(request: Request): 
-  state = await request.json()
+async def toggle(state_request: State): 
+  state = state_request.model_dump()
 
   lights_obj = await db["hub"].find_one({"thing":"state"})
   if lights_obj:

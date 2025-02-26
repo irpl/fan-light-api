@@ -51,11 +51,11 @@ async def toggle(state_request: State):
   
   new_ligts_obj = await db["hub"].find_one({"thing":"state"}) 
 
-  return new_ligts_obj
+  return State(**new_ligts_obj)
 
 @app.get("/api/state")
 async def get_state():
   state = await db["hub"].find_one({"thing": "state"})
   if state == None:
     return {"lights": False, "fan": False}
-  return state
+  return State(**state)

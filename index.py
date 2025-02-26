@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI, Request
 import motor.motor_asyncio
 from bson import ObjectId
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -23,7 +23,10 @@ app.add_middleware(
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"])
 db = client.things
 
+PyObjectId = Annotated[str, BeforeValidator(str)]
+
 class State(BaseModel):
+  id: PyObjectId | None = Field(alias="_id", default=None)
   fan: bool
   lights: bool
         

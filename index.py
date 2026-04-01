@@ -21,16 +21,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"])
-db = client.things
-
-PyObjectId = Annotated[str, BeforeValidator(str)]
 
 class State(BaseModel):
-  id: PyObjectId | None = Field(alias="_id", default=None)
   fan: bool
   lights: bool
         
+state: State = {}
 
 @app.get("/")
 async def read_root():
@@ -40,22 +36,12 @@ async def read_root():
 
 @app.put("/api/state")
 async def toggle(state_request: State): 
-  state = state_request.model_dump()
+  global state
 
-  lights_obj = await db["hub"].find_one({"thing":"state"})
-  if lights_obj:
-    await db["hub"].update_one({"thing":"state"}, {"$set": state})
+  state = state_request
 
-  else:
-    await db["hub"].insert_one({**state, "thing": "state"})
-  
-  new_ligts_obj = await db["hub"].find_one({"thing":"state"}) 
-
-  return State(**new_ligts_obj)
+  return state
 
 @app.get("/api/state")
 async def get_state():
-  state = await db["hub"].find_one({"thing": "state"})
-  if state == None:
-    return {"lights": False, "fan": False}
-  return State(**state)
+  return state

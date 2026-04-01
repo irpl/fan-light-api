@@ -7,6 +7,8 @@ from typing import Annotated
 
 from fastapi.middleware.cors import CORSMiddleware
 
+# this is a useless change
+
 app = FastAPI()
 
 origins = [
